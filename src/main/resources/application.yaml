@@ -1,0 +1,49 @@
+spring:
+  mustache:
+    suffix: .html
+logging:
+  level:
+    web: INFO
+    dev.educates.hub: DEBUG
+
+##########
+# HUB CONFIGURATION
+##########
+hub:
+  refreshTimeout: 600
+##########
+# PORTAL CONFIGURATION
+##########
+# catalog:
+#   portals:
+#     - name: educates-labs
+#       url: https://educates-labs-ui.apps.dev.educates.io/
+#       robot:
+#         client_id: grumpy-old-man
+#         client_secret: what-a-looser
+#         username: robot@educates
+#         password: jorge-is-awesome
+##########
+# WEBSITE CONFIGURATION
+##########
+web:
+  site:
+    baseUrl:
+    title: educates hub
+    img: educates.png
+  copyright:
+    name: educates
+    link: https://educates.dev
+  slack: https://kubernetes.slack.com/archives/C05UWT4SKRV
+  github: https://github.com/vmware-tanzu-labs/educates-training-platform
+  analytics:
+  page:
+    defaultImage: educates.png
+  web:
+    menu:
+      main:
+        install:
+          name: Install
+          pre: <i class='fa fa-bolt'></i>
+          url: /pages/install
+          weight: -200

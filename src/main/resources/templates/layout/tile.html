@@ -1,0 +1,46 @@
+{{#workshops}}
+<!-- Different sizes, depending on screen size (12/size number of columns) (large, medium, extra-small)-->
+<div class="clr-col-xl-2 clr-col-lg-3 clr-col-md-6 clr-col-12 tile" id="{{name}}">
+    <a href="/workshops/{{id}}/" class="card clickable">
+        <div class="card-header text-one-line-no-overflow">
+            {{title}}
+        </div>
+        
+        <div class="card-block">
+            <div class="card-media-block hub-card-image-height">
+                {{#logo.logo}}
+                    {{#logo.dataUri}}
+                    <img class="card-media-image hub-card-image" src="{{logo.logo}}" alt="{{title}}">
+                    {{/logo.dataUri}}
+                    {{^logo.dataUri}}
+                    <img class="card-media-image hub-card-image" src="{{web.site.baseUrl}}/images/{{logo.logo}}" alt="{{title}}">
+                    {{/logo.dataUri}}
+                {{/logo.logo}}
+                {{^logo.logo}}
+                <img class="card-media-image hub-card-image" src="{{web.site.baseUrl}}/images/{{web.page.defaultImage}}" alt="{{title}}">
+                {{/logo.logo}}
+                <div class="card-media-description">
+                    <span class="card-media-title">
+                        Author: Graham
+                    </span>
+                    <span class="card-media-text">
+                        {{#duration}}
+                        <small><i class="fa fa-hourglass-half" aria-hidden="true"></i></small>&nbsp;&nbsp;{{ duration }}
+                        {{/duration}}
+                    </span>
+                </div>
+            </div>
+            <div class="card-text hub-card-height text-no-overflow">
+                {{description}}
+            </div>
+        </div>
+        <div class="card-footer tile-label-area">
+            &nbsp;
+            <!-- TODO: Change the ^ to # -->
+            {{#tags}}
+            {{>layout/tags}}
+            {{/tags}}
+        </div>
+    </a>
+</div>
+{{/workshops}}

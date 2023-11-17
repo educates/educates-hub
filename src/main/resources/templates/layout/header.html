@@ -1,0 +1,32 @@
+<header class="header-4">
+    <div class="branding">
+        <a href="{{web.site.baseUrl}}/" class="nav-link">
+            <img class="hublogo" src="{{web.site.baseUrl}}/images/{{web.site.img}}" alt="" />
+            <span class="title hubtitle">{{web.site.title}}</span>
+        </a>
+    </div>
+    <div class="header-nav">
+        <a href="/pages/install" class="nav-link nav-text">Install</a>
+        <a href="/pages/about" class="nav-link nav-text">About</a>
+        <a target="_blank" href="https://docs.educates.dev/" class="nav-link nav-text">Docs</a>
+        <a href="/pages/contact" class="nav-link nav-text">Contact</a>
+    </div>
+    <!-- Search partial here -->
+    {{>layout/search}}
+
+    <div class="header-actions">
+        <div class="dropdown bottom-right" id="dropdown">
+            <button class="dropdown-toggle btn btn-link" type="button" id="dropdown-button">
+                Contribute
+                <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <div class="dropdown-menu">
+                <a target="_blank" class="dropdown-item" href="https://github.com/vmware-tanzu-labs/educates-training-platform">Project</a>
+                <div class="dropdown-divider" role="separator"></div>
+                <a target="_blank" class="dropdown-item" href="https://github.com/educates">Subprojects</a>
+                <a target="_blank" class="dropdown-item" href="https://github.com/educates-labs">Labs</a>
+                <a target="_blank" class="dropdown-item" href="https://github.com/educates-tests">Tests</a>
+            </div>
+        </div>
+    </div>
+</header>

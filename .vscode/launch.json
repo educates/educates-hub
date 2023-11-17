@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - WorkshopUID",
+      "request": "launch",
+      "mainClass": "dev.educates.hub.model.hub.WorkshopUID",
+      "projectName": "hub"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-HubApplication<hub>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "mainClass": "dev.educates.hub.HubApplication",
+      "projectName": "hub",
+      "args": "--spring.profiles.active=dev"
+    }
+  ]
+}

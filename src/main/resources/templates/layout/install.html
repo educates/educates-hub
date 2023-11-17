@@ -1,0 +1,59 @@
+<div class="content-area">
+
+    <div class="post-title">
+        <h1>Kubernetes operator for educates</h1>
+    </div>
+
+    <div class="post-content">
+        <p>Kubernetes operator for deploying educates workshop environments on Kubernetes.</p>
+        <h2 id="deploying-the-educates-operator">Deploying the educates operator</h2>
+        <p>To deploy the operator, run:</p>
+        <div class="card">
+            <code class="language-bash" data-lang="bash">kubectl apply -k <span style="color:#e6db74">&#34;github.com/educates/educates-operator?ref=master&#34;</span>
+            </code>
+        </div>
+        <p>Note that tagged versions haven&rsquo;t been created as yet, so this is using the latest version.
+            Tagging of versions will be setup soon.</p>
+        <p>The command above will create a namespace in your Kubernetes cluster called <code>educates</code>
+            and the operator along with any required namespaced resources will be created in it. A set of
+            custom resource definitions and a global cluster role binding will also be created. The list of
+            resources you should see being created are:</p>
+        <div class="card">
+            <code class="language-bash" data-lang="bash">
+                customresourcedefinition.apiextensions.k8s.io/workshopenvironments.training.educates.io created
+                customresourcedefinition.apiextensions.k8s.io/workshoprequests.training.educates.io created
+                customresourcedefinition.apiextensions.k8s.io/workshops.training.educates.io created
+                customresourcedefinition.apiextensions.k8s.io/workshopsessions.training.educates.io created
+                serviceaccount/educates created
+                clusterrolebinding.rbac.authorization.k8s.io/educates-cluster-admin created
+                deployment.apps/educates-operator created
+            </code>
+        </div>
+        <p>You can check that the operator deployed okay by running:</p>
+        <div class="card">
+            <code class="language-bash" data-lang="bash">kubectl get all -n educates
+            </code>
+        </div>
+        <p>The pod for the operator should be marked as running.</p>
+        <h3 id="specifying-the-ingress-domain">Specifying the ingress domain</h3>
+        <p>The operator when deploying instances of the workshop environments needs to be able to expose
+            them via an external URL for access. To define the domain name that can be used as a suffix to
+            hostnames for instances, you need to set the <code>INGRESS_DOMAIN</code> environment variable on
+            the operator deployment. To do this run:</p>
+        <div class="card">
+            <code class="language-bash" data-lang="bash">kubectl set env deployment/educates-operator -n educates INGRESS_DOMAIN<span style="color:#f92672">=</span>test
+            </code>
+        </div>
+        <p>Replace <code>test</code> with the domain name for your Kubernetes cluster.</p>
+        <p>If you do not set this, the ingress created will use <code>training.educates.io</code> as a
+            default.</p>
+        <p>If your Kubernetes cluster doesn&rsquo;t have an ingress controller configured, you will need to
+            use port forwarding to access a workshop environment.</p>
+        <h2 id="deploying-workshop-environments">Deploying workshop environments</h2>
+        <p>For deploying workshops using the educates operator, see the educates documentation at:</p>
+        <ul>
+            <li><a href="https://docs.educates.dev/">https://docs.educates.dev/</a></li>
+        </ul>
+
+    </div>
+</div>

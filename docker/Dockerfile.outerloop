@@ -1,0 +1,24 @@
+FROM maven:3.9.5-eclipse-temurin-17 as builder
+WORKDIR /usr/src/app/
+COPY pom.xml .
+RUN mvn -e -B dependency:resolve
+COPY src ./src
+RUN mvn -e -B package
+
+FROM eclipse-temurin:17-jre as layers
+WORKDIR /application
+ARG JAR_FILE=/usr/src/app/target/*.jar
+COPY --from=builder ${JAR_FILE} application.jar
+RUN mkdir dependencies snapshot-dependencies resources application && \
+    java -Djarmode=layertools -jar application.jar extract
+    
+
+FROM eclipse-temurin:17-jre as runtime
+USER 1000
+WORKDIR /application
+COPY --from=layers /application/spring-boot-loader/ ./
+COPY --from=layers /application/dependencies/ ./
+COPY --from=layers /application/snapshot-dependencies/ ./
+COPY --from=layers /application/resources/ ./
+COPY --from=layers /application/application/ ./
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
