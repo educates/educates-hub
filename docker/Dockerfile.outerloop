@@ -14,6 +14,7 @@ RUN mkdir dependencies snapshot-dependencies resources application && \
     
 
 FROM eclipse-temurin:17-jre as runtime
+LABEL org.opencontainers.image.source https://github.com/educates/educates-hub
 USER 1000
 WORKDIR /application
 COPY --from=layers /application/spring-boot-loader/ ./

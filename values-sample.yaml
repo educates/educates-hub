@@ -1,11 +1,11 @@
 #@data/values
 ---
 namespace:
-  name: educates
-  create: false
+  name: educateshub
+  create: true
 replicas: 1
 image:
-  name: ghcr.io/educates/educates-hub:master
+  name: ghcr.io/educates/educates-hub:main
   build: false
   push_repo: registry.test:5000/educates #! DO NOT SPECIFY TAG
 host: hub.10.30.82.22.nip.io

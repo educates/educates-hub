@@ -77,8 +77,8 @@
 						<enabled>true</enabled>
 					</layers>
 					<image>
-						<builder>paketobuildpacks/builder:base</builder>
-						<name>ghcr.io/educates/hub/${project.artifactId}:${project.version}</name>
+						<builder>paketobuildpacks/builder-jammy-base:latest</builder>
+						<name>ghcr.io/educates/educates-hub:${project.version}</name>
 					</image>
 				</configuration>
 			</plugin>

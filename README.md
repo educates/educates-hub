@@ -55,6 +55,32 @@ If you want to delete your application, it can be done in an easy command, anywh
 kapp delete -a educateshub
 ```
 
+## Deploy our existing container
+
+We use ytt to create/customize the configuration, so create a values.yaml file in the root folder with at least following content:
+
+```
+host: hub.<YOUR_WILDCARD_DOMAIN>
+application_yaml:
+  catalog:
+    portals: #! This can be a list of trainingportals
+      - name: <YOUR_TRAININGPORTAL_NAME>
+        url: <YOUR_TRAININGPORTAL_URL>
+        robot:
+          client_id: <YOUR_TRAININGPORTAL_ROBOT_CLIENT_ID>
+          client_secret: <YOUR_TRAININGPORTAL_ROBOT_CLIENT_SECRET>
+          username: <YOUR_TRAININGPORTAL_ROBOT_USERNAME>
+          password:<YOUR_TRAININGPORTAL_ROBOT_PASSWORD>
+```
+
+**NOTE:** You can customize any other values defined in the [schema](k8s/schema.yaml)
+
+and run:
+
+```
+ytt -f values.yaml -f k8s | kbld -f - | kapp deploy -y --diff-changes -a educateshub -f-
+```
+
 ## Build your container
 
 There's 4 ways to build your container image:
@@ -70,7 +96,7 @@ There's 4 ways to build your container image:
 
 ```
 mvn package spring-boot:build-image
-# Image will be: ghcr.io/educates/hub/hub:main
+# Image will be: ghcr.io/educates/educates-hub:main
 ```
 
 ### Option 2: Inner loop build

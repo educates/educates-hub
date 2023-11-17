@@ -1,4 +1,5 @@
 #@ load("@ytt:data", "data")
+#@ load("@ytt:yaml", "yaml")
 
 #@ if data.values.namespace.create:
 apiVersion: v1
@@ -13,9 +14,7 @@ metadata:
   name: educateshub
   namespace: #@ data.values.namespace.name
 data:
-  application.yaml:
-    catalog:
-      portals: #@ data.values.portals
+  application.yaml: #@ yaml.encode(data.values.application_yaml)
 
 ---
 apiVersion: apps/v1

@@ -5,7 +5,7 @@
 apiVersion: kbld.k14s.io/v1alpha1
 kind: Sources
 sources:
-  - image: ghcr.io/educates/educates-hub:master
+  - image: ghcr.io/educates/educates-hub:main
     path: .
     docker:
       build:

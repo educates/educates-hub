@@ -6,7 +6,7 @@
 apiVersion: kbld.k14s.io/v1alpha1
 kind: ImageDestinations
 destinations:
-  - image: ghcr.io/educates/educates-hub:master
+  - image: ghcr.io/educates/educates-hub:main
     #@ if not data.values.image.push_repo or len(data.values.image.push_repo) == 0:
     #@   assert.fail("Expected image.push_repo to be non-empty. Example: docker.io/dkalinin/k8s-simple-app")
     #@ end

@@ -1,0 +1,15 @@
+#@data/values-schema
+---
+namespace:
+  name: educateshub
+  create: true
+replicas: 1
+image:
+  name: ghcr.io/educates/educates-hub:main
+  build: false
+  push_repo: ghcr.io/educates/educates-hub #! DO NOT SPECIFY TAG
+#@schema/validation min_len=1
+host: ""
+dockerfile: docker/Dockerfile.outerloop
+#@schema/type any=True
+application_yaml:
