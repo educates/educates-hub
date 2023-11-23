@@ -93,6 +93,9 @@ kind: Ingress
 metadata:
   name: ingress-educateshub
   namespace: #@ data.values.namespace.name
+  #@ if/end hasattr(data.values.tls_secret, "name") and hasattr(data.values.tls_secret, "namespace") and data.values.tls_secret.name and data.values.tls_secret.namespace:
+  annotations:
+    projectcontour.io/tls-cert-namespace: #@ data.values.tls_secret.namespace
 spec:
   rules:
     - host: #@ data.values.host
@@ -105,3 +108,8 @@ spec:
                   number: 8080
             path: /
             pathType: Prefix
+  #@ if/end hasattr(data.values.tls_secret, "name") and hasattr(data.values.tls_secret, "namespace") and data.values.tls_secret.name and data.values.tls_secret.namespace:
+  tls:
+    - hosts:
+        -  #@ data.values.host
+      secretName: #@ data.values.tls_secret.name

@@ -11,5 +11,9 @@ image:
 #@schema/validation min_len=1
 host: ""
 dockerfile: docker/Dockerfile.outerloop
+#@schema/nullable
+tls_secret:
+  name: ""
+  namespace: ""
 #@schema/type any=True
 application_yaml:
