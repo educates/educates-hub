@@ -1,0 +1,157 @@
+name: Build and Publish Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_platforms:
+        type: choice
+        description: Platforms
+        options:
+          - linux/amd64
+          - linux/arm64
+          - linux/amd64,linux/arm64
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  publish-generic-images:
+    name: Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Calculate platforms
+        shell: bash
+        run: |
+          TARGET_PLATFORMS="${{github.event.inputs.target_platforms}}"
+          if [ -z "$TARGET_PLATFORMS" ]; then
+            TARGET_PLATFORMS="${{secrets.TARGET_PLATFORMS}}"
+          fi
+          if [ -z "$TARGET_PLATFORMS" ]; then
+            IS_FORK=$(if [[ $GITHUB_EVENT_NAME == 'push' && $GITHUB_EVENT_PATH ]]; then jq -r .repository.fork <<< $(cat $GITHUB_EVENT_PATH); else echo false; fi)
+            if [ $IS_FORK == "true" ]; then
+              TARGET_PLATFORMS="linux/amd64"
+            else
+              TARGET_PLATFORMS="linux/amd64,linux/arm64"
+            fi
+          fi
+          echo "TARGET_PLATFORMS=${TARGET_PLATFORMS}" >>${GITHUB_ENV}
+
+      - name: Calculate variables
+        shell: bash
+        run: |
+          REPOSITORY_OWNER=${{github.repository_owner}}
+          echo "REPOSITORY_OWNER=${REPOSITORY_OWNER,,}" >>${GITHUB_ENV}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v3
+        # related issues for pinning buildkit
+        # https://github.com/docker/build-push-action/issues/761
+        # https://github.com/containerd/containerd/issues/7972
+        # https://github.com/containerd/containerd/pull/6995
+        with:
+          driver-opts: |
+            image=moby/buildkit:v0.10.6
+
+      - name: Restore Docker cache (amd64)
+        uses: actions/cache/restore@v3
+        with:
+          path: /tmp/.buildx-cache-amd64-new
+          key: ${{runner.os}}-buildx-cache-amd64-${{github.sha}}
+          restore-keys: |
+            ${{runner.os}}-buildx-cache-amd64-
+
+      - name: Restore Docker cache (arm64)
+        uses: actions/cache/restore@v3
+        with:
+          path: /tmp/.buildx-cache-arm64-new
+          key: ${{runner.os}}-buildx-cache-arm64-${{github.sha}}
+          restore-keys: |
+            ${{runner.os}}-buildx-cache-arm64-
+
+      - name: Rename cache directories
+        run: |
+          test -d /tmp/.buildx-cache-amd64-new && mv /tmp/.buildx-cache-amd64-new /tmp/.buildx-cache-amd64-old || true
+          test -d /tmp/.buildx-cache-arm64-new && mv /tmp/.buildx-cache-arm64-new /tmp/.buildx-cache-arm64-old || true
+          du -ks /tmp/.buildx-cache-* || true
+
+      - name: Generate container image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{env.REPOSITORY_OWNER}}/educates-hub
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Login to GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+          registry: ghcr.io
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.outerloop
+          platforms: ${{env.TARGET_PLATFORMS}}
+          tags: ${{steps.meta.outputs.tags}}
+          cache-from: |
+            type=local,src=/tmp/.buildx-cache-arm64-old
+            type=local,src=/tmp/.buildx-cache-amd64-old
+          push: true
+
+      - name: Cache build (amd64)
+        if: contains(env.TARGET_PLATFORMS, 'linux/amd64')
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.outerloop
+          platforms: linux/amd64
+          cache-from: type=local,src=/tmp/.buildx-cache-amd64-old
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-amd64-new
+          push: false
+
+      - name: Cache build (arm64)
+        if: contains(env.TARGET_PLATFORMS, 'linux/arm64')
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.outerloop
+          platforms: linux/arm64
+          cache-from: type=local,src=/tmp/.buildx-cache-arm64-old
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-arm64-new
+          push: false
+
+      - name: Dump cache directory sizes
+        run: |
+          du -ks /tmp/.buildx-cache-* || true
+
+      - name: Save Docker cache (amd64)
+        uses: actions/cache/save@v3
+        with:
+          path: /tmp/.buildx-cache-amd64-new
+          key: ${{runner.os}}-buildx-cache-amd64-${{github.sha}}
+
+      - name: Save Docker cache (arm64)
+        uses: actions/cache/save@v3
+        with:
+          path: /tmp/.buildx-cache-arm64-new
+          key: ${{runner.os}}-buildx-cache-arm64-${{github.sha}}
